@@ -18,6 +18,7 @@
             [status-im.ui.screens.browser.open-dapp.views :as open-dapp]
             [status-im.ui.screens.browser.views :as browser]
             [status-im.ui.screens.chat.views :as chat]
+            [status-im.ui.screens.ens.views :as ens]
             [status-im.ui.screens.contacts-list.views :as contacts-list]
             [status-im.ui.screens.currency-settings.views :as currency-settings]
             [status-im.ui.screens.dapps-permissions.views :as dapps-permissions]
@@ -137,6 +138,10 @@
    :my-profile                       profile.user/my-profile
    :my-profile-ext-settings          profile.user/extensions-settings
    :contacts-list                    contacts-list/contacts-list
+   :ens-main                         ens/main
+   :ens-register                     ens/register
+   :ens-terms                        ens/terms
+   :ens-name-details                 ens/name-details
    :blocked-users-list               contacts-list/blocked-users-list
    :profile-photo-capture            photo-capture/profile-photo-capture
    :about-app                        about-app/about-app
