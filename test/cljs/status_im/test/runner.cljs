@@ -13,7 +13,7 @@
             [status-im.test.chat.models.message]
             [status-im.test.chat.models]
             [status-im.test.chat.views.photos]
-            [status-im.test.contact-code.core]
+            [status-im.test.transport.filters.core]
             [status-im.test.contact-recovery.core]
             [status-im.test.contacts.device-info]
             [status-im.test.data-store.chats]
@@ -32,8 +32,9 @@
             [status-im.test.hardwallet.core]
             [status-im.test.i18n]
             [status-im.test.init.core]
-            [status-im.test.mailserver.core]
             [status-im.test.models.account]
+            [status-im.test.mailserver.core]
+            [status-im.test.mailserver.topics]
             [status-im.test.models.bootnode]
             [status-im.test.models.contact]
             [status-im.test.models.network]
@@ -92,7 +93,7 @@
  'status-im.test.chat.models.message
  'status-im.test.chat.models.message-content
  'status-im.test.chat.views.photos
- 'status-im.test.contact-code.core
+ 'status-im.test.transport.filters.core
  'status-im.test.contact-recovery.core
  'status-im.test.contacts.db
  'status-im.test.contacts.device-info
@@ -113,6 +114,7 @@
  'status-im.test.i18n
  'status-im.test.init.core
  'status-im.test.mailserver.core
+ 'status-im.test.mailserver.topics
  'status-im.test.models.account
  'status-im.test.models.bootnode
  'status-im.test.models.contact
