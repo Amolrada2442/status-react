@@ -42,7 +42,7 @@ let
     (lib.attrValues source)));
 
 in stdenvNoCC.mkDerivation {
-  name = "fake-maven-repo-${name}";
+  inherit name;
   phases = [ "buildPhase" ];
   buildPhase = "${script}/bin/create-local-maven-repo";
 }

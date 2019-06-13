@@ -56,7 +56,7 @@ let
       ln -sf ./mobile_files/metro.config.js
 
       # Create a dummy VERSION, since we don't want this expression to be invalidated just because the version changed
-      echo "0.0.1" > VERSION
+      echo '0.0.1' > VERSION
 
       runHook postUnpack
     '';
@@ -65,24 +65,40 @@ let
 
       patchShebangs .
 
+      function patchMavenSource() {
+        local targetGradleFile="$1"
+        local source="$2"
+        local deriv="$3"
+        grep "$source" $targetGradleFile > /dev/null && substituteInPlace $targetGradleFile --replace "$source" "maven { url \"$deriv\" }" || echo -n ""
+      }
+
+      function patchMavenSources() {
+        local targetGradleFile="$1"
+        local deriv="$2"
+        patchMavenSource $targetGradleFile 'mavenLocal()' "$deriv"
+        patchMavenSource $targetGradleFile 'mavenCentral()' "$deriv"
+        patchMavenSource $targetGradleFile 'google()' "$deriv"
+        patchMavenSource $targetGradleFile 'jcenter()' "$deriv"
+        grep 'https://maven.google.com' $targetGradleFile > /dev/null && substituteInPlace $targetGradleFile --replace 'https://maven.google.com' "$deriv" || echo -n ""
+        grep '$rootDir/../node_modules/react-native/android' $1 > /dev/null && substituteInPlace $1 --replace '$rootDir/../node_modules/react-native/android' '${mavenLocalRepos.react-native-android}' || echo -n ""
+      }
+
       # Patch maven and google central repositories with our own local directories. This prevents the builder from downloading Maven artifacts
+      patchMavenSources 'node_modules/react-native/build.gradle' '${mavenLocalRepos."StatusIm"}'
       ${lib.concatStrings (lib.mapAttrsToList (projectName: deriv:
         let targetGradleFile = if projectName == nodeProjectName then "android/build.gradle" else "node_modules/${projectName}/android/build.gradle";
         in ''
-      grep 'google()' ${targetGradleFile} > /dev/null && substituteInPlace ${targetGradleFile} --replace "google()" "maven { url \"${deriv}\" }"
-      grep 'jcenter()' ${targetGradleFile} > /dev/null && substituteInPlace ${targetGradleFile} --replace "jcenter()" "maven { url \"${deriv}\" }"
-      grep 'https://maven.google.com' ${targetGradleFile} > /dev/null && substituteInPlace ${targetGradleFile} --replace "https://maven.google.com" "${deriv}"
-      grep '\$rootDir/../node_modules/react-native/android' ${targetGradleFile} > /dev/null && substituteInPlace ${targetGradleFile} --replace "\$rootDir/../node_modules/react-native/android" "${mavenLocalRepos.react-native-android}"
+          patchMavenSources '${targetGradleFile}' '${deriv}'
         '') (lib.filterAttrs (name: value: name != "react-native-android") mavenLocalRepos))}
 
       # Patch prepareJSC so that it doesn't try to download from registry
       substituteInPlace node_modules/react-native/ReactAndroid/build.gradle \
-        --replace "prepareJSC(dependsOn: downloadJSC)" "prepareJSC(dependsOn: createNativeDepsDirectories)" \
-        --replace "def jscTar = tarTree(downloadJSC.dest)" "def jscTar = tarTree(new File(\"../../../deps/${jsc-filename}.tar.gz\"))"
+        --replace 'prepareJSC(dependsOn: downloadJSC)' 'prepareJSC(dependsOn: createNativeDepsDirectories)' \
+        --replace 'def jscTar = tarTree(downloadJSC.dest)' 'def jscTar = tarTree(new File("../../../deps/${jsc-filename}.tar.gz"))'
 
       # We don't want to include the scripts directory, as this would invalidate the Nix cache build every time an unrelated script changed. In any case, the version shouldn't matter for this build.
       substituteInPlace android/app/build.gradle \
-        --replace "versionCode getVersionCode()" "versionCode 9999"
+        --replace 'versionCode getVersionCode()' 'versionCode 9999'
 
       # HACK: Run what would get executed in the `prepare` script (though index.js.flow will be missing)
       # Ideally we'd invoke `npm run prepare` instead, but that requires quite a few additional dependencies
@@ -107,12 +123,13 @@ let
     installPhase = ''
       rm -rf $out
       mkdir -p $out
+      # TODO: maybe node_modules/react-native/ReactAndroid/build/{intermediates,tmp,generated} can be discarded?
       cp -R android/ node_modules/ $out
 
       # Patch prepareJSC so that it doesn't subsequently try to build NDK libs
       substituteInPlace $out/node_modules/react-native/ReactAndroid/build.gradle \
-        --replace "packageReactNdkLibs(dependsOn: buildReactNdkLib, " "packageReactNdkLibs(" \
-        --replace "../../../deps/${jsc-filename}.tar.gz" "${react-native-deps}/deps/${jsc-filename}.tar.gz" 
+        --replace 'packageReactNdkLibs(dependsOn: buildReactNdkLib, ' 'packageReactNdkLibs(' \
+        --replace '../../../deps/${jsc-filename}.tar.gz' '${react-native-deps}/deps/${jsc-filename}.tar.gz' 
     '';
 
     # The ELF types are incompatible with the host platform, so let's not even try
