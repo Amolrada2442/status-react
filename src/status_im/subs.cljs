@@ -1853,10 +1853,16 @@
    (:usernames account)))
 
 (re-frame/reg-sub
- :ens/username
+ :ens/preferred-name
  :<- [:account/account]
- (fn [account [_ username]]
-   (:usernames account)))
+ (fn [account]
+   (:preferred-name account)))
+
+(re-frame/reg-sub
+ :ens/show?
+ :<- [:account/account]
+ (fn [account]
+   (:show-name? account)))
 
 (re-frame/reg-sub
  :ens.registration/screen
@@ -1880,6 +1886,16 @@
      {:name       name
       :address    address
       :public-key public-key})))
+
+(re-frame/reg-sub
+ :ens.main/screen
+ :<- [:account/usernames]
+ :<- [:ens/preferred-name]
+ :<- [:ens/show?]
+ (fn [[names preferred-name show?] _]
+   {:names          names
+    :preferred-name preferred-name
+    :show?          (or show? false)}))
 
 ;;SIGNING =============================================================================================================
 

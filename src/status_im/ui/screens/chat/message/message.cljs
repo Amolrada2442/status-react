@@ -219,7 +219,6 @@
   [{:keys [last-in-group?
            display-photo?
            display-username?
-           message-type
            from
            outgoing
            modal?
@@ -232,10 +231,10 @@
          [react/touchable-highlight {:on-press #(when-not modal? (re-frame/dispatch [:chat.ui/show-profile from]))}
           [react/view
            [photos/member-photo from]]])])
-    [react/view (style/group-message-view outgoing message-type)
+    [react/view (style/group-message-view outgoing)
      (when display-username?
        [message-author-name from username])
-     [react/view {:style (style/timestamp-content-wrapper outgoing message-type)}
+     [react/view {:style (style/timestamp-content-wrapper outgoing)}
       content]]]
    [react/view (style/delivery-status outgoing)
     [message-delivery-status message]]])

@@ -125,6 +125,20 @@
                                     {:usernames (get-in db [:account/account :usernames])}
                                     {:success-event [:ens/set-state username :saved]})))
 
+(fx/defn save-preferred-username
+  {:events [:ens/save-preferred-username]}
+  [{:keys [db] :as cofx} custom-domain? username]
+  (let [name (fullname custom-domain? username)
+        db   (update-in db [:account/account :usernames] #((fnil conj []) %1 %2) name)]
+    (accounts.update/account-update cofx
+                                    {:usernames (get-in db [:account/account :usernames])}
+                                    {:success-event [:ens/set-state username :saved]})))
+
+(fx/defn switch-show-username
+  {:events [:ens/switch-show-username]}
+  [{:keys [db]} _]
+  {:db (-> (update-in db [:account/account :show-name?] not))})
+
 (fx/defn on-registration-failure
   {:events [:ens/on-registration-failure]}
   [{:keys [db]} username]
