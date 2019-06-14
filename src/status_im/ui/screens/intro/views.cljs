@@ -147,6 +147,7 @@
        [react/view {:style {:margin-horizontal 16 :flex 1}}
         [react/text {:style (assoc styles/wizard-text :font-weight "500" :color colors/black :text-align :left)}
          (i18n/label title)]
+        [react/view {:style {:min-height 4 :max-height 4}}]
         [react/text {:style (assoc styles/wizard-text :text-align :left)}
          (i18n/label desc)]]
        [radio/radio selected?]]]]))
@@ -164,7 +165,7 @@
                          :justify-content :flex-end
                          ;; We have to align top storage entry
                          ;; with top account entry on the previous screen
-                         :margin-bottom (+ (- 300 224) (if (< view-height 600)
+                         :margin-bottom (+ (- 300 232) (if (< view-height 600)
                                                          -20
                                                          (/ view-height 12)))}}
      [storage-entry (first storage-types) selected-storage-type]
