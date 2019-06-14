@@ -5756,7 +5756,7 @@ react-native-webview@^5.2.1:
 
 "react-native@git+https://github.com/status-im/react-native.git#status-0.59.3-render":
   version "0.59.3"
-  resolved "git+https://github.com/status-im/react-native.git#bc655dcca5f90be75dc54a633a8da2745beecb29"
+  resolved "git+https://github.com/status-im/react-native.git#951a4bd23b798b9afd25018145849d90b3f0cf2b"
   dependencies:
     "@babel/runtime" "^7.0.0"
     "@react-native-community/cli" "^1.2.1"
