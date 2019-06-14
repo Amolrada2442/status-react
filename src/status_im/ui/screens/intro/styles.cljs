@@ -31,16 +31,12 @@
    :margin-top  42})
 
 (def wizard-title
-  {:font-size     22
-   :line-height   28
+  {:typography    :header
    :text-align    :center
-   :font-weight   "600"
    :margin-bottom 16})
 
 (def wizard-text
-  {:font-size   15
-   :line-height 22
-   :color       colors/gray
+  {:color       colors/gray
    :text-align  :center})
 
 (def welcome-text
@@ -49,8 +45,7 @@
    :text-align  :center})
 
 (def welcome-text-bottom-note
-  {:font-size   12
-   :line-height 14
+  {:typography  :caption
    :color       colors/gray
    :text-align  :center})
 
@@ -80,20 +75,7 @@
    :icon-size 46})
 
 (def password-text-input
-  {:font-size    22
-   :line-height  24
-   :font-weight  "600"})
-
-(defstyle intro-text
-  {:text-align  :center
-   :font-weight "700"
-   :font-size   24})
-
-(def intro-text-description
-  {:margin-top    8
-   :margin-bottom 16
-   :text-align    :center
-   :color         colors/gray})
+  {:typography :header})
 
 (def buttons-container
   {:align-items :center

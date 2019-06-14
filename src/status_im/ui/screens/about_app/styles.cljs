@@ -19,8 +19,7 @@
   {:font-size 20})
 
 (def learn-more-title
-  {:font-size   17
-   :font-weight "600"})
+  {:typography :title-bold})
 
 (def learn-more-text
   {:color colors/gray})

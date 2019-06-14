@@ -145,7 +145,7 @@
        [vector-icons/icon icon {:color (if selected? colors/blue colors/gray)
                                 :width 24 :height 24}]
        [react/view {:style {:margin-horizontal 16 :flex 1}}
-        [react/view {:style {:margin-top -4}}
+        [react/view {:style {}}
          [react/text {:style (assoc styles/wizard-text :font-weight "500" :color colors/black :text-align :left)}
           (i18n/label title)]]
         [react/text {:style (assoc styles/wizard-text :text-align :left)}
@@ -160,13 +160,12 @@
                        {:type :advanced
                         :icon :main-icons/keycard-logo
                         :title :keycard
-                        :desc :keycard-desc}]
-        _ (log/info "#2" view-height)]
+                        :desc :keycard-desc}]]
     [react/view {:style {:flex 1
                          :justify-content :flex-end
                          ;; We have to align top storage entry
                          ;; with top account entry on the previous screen
-                         :margin-bottom (+ (- 320 244) (if (< view-height 600)
+                         :margin-bottom (+ (- 300 224) (if (< view-height 600)
                                                          -20
                                                          (/ view-height 12)))}}
      [storage-entry (first storage-types) selected-storage-type]
