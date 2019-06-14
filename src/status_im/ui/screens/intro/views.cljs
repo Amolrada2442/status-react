@@ -145,9 +145,8 @@
        [vector-icons/icon icon {:color (if selected? colors/blue colors/gray)
                                 :width 24 :height 24}]
        [react/view {:style {:margin-horizontal 16 :flex 1}}
-        [react/view {:style {}}
-         [react/text {:style (assoc styles/wizard-text :font-weight "500" :color colors/black :text-align :left)}
-          (i18n/label title)]]
+        [react/text {:style (assoc styles/wizard-text :font-weight "500" :color colors/black :text-align :left)}
+         (i18n/label title)]
         [react/text {:style (assoc styles/wizard-text :text-align :left)}
          (i18n/label desc)]]
        [radio/radio selected?]]]]))
