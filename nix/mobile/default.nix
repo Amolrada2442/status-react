@@ -9,7 +9,7 @@ let
     version = "10.1";
   };
   xcodeWrapper = composeXcodeWrapper xcodewrapperArgs;
-  androidPlatform = callPackage ./android { inherit config pkgs mkFilter nodejs gradle status-go localMavenRepoBuilder nodeProjectName developmentNodePackages; projectNodePackage = projectNodePackage'; };
+  androidPlatform = callPackage ./android { inherit config pkgs mkFilter nodejs gradle status-go localMavenRepoBuilder nodeProjectName developmentNodePackages prod-build; projectNodePackage = projectNodePackage'; };
   iosPlatform = callPackage ./ios { inherit config pkgs mkFilter xcodeWrapper status-go nodeProjectName developmentNodePackages; projectNodePackage = projectNodePackage'; };
   selectedSources =
     lib.optional platform.targetAndroid androidPlatform ++
@@ -32,7 +32,7 @@ let
 
 in
   {
-    inherit (androidPlatform) androidComposition;
+    inherit (androidPlatform) androidComposition release-android;
     inherit xcodewrapperArgs;
 
     buildInputs =

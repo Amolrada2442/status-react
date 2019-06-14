@@ -3,7 +3,7 @@
   nodeProjectName, projectNodePackage, developmentNodePackages, androidEnvShellHook, localMavenRepoBuilder, mkFilter }:
 
 let
-  mavenLocalRepos = import ./maven/maven-repo.nix { inherit stdenvNoCC localMavenRepoBuilder; };
+  mavenLocalRepo = localMavenRepoBuilder "status-react-maven-deps" (import ./maven { });
 
   jsc-filename = "jsc-android-236355.1.1";
   react-native-deps = callPackage ./maven/reactnative-android-native-deps.nix { inherit stdenvNoCC jsc-filename; };
@@ -38,7 +38,9 @@ let
       chmod u+w .
 
       # Copy fresh RN maven dependencies and make them writable, otherwise Gradle copy fails
+      mkdir -p ./.m2/repository
       cp -a ${react-native-deps}/deps ./deps
+      cp -a ${mavenLocalRepo}/. ./.m2/repository
 
       # Copy fresh node_modules
       rm -rf ./node_modules
@@ -66,30 +68,34 @@ let
       patchShebangs .
 
       function patchMavenSource() {
+        set +e
+
         local targetGradleFile="$1"
         local source="$2"
         local deriv="$3"
-        grep "$source" $targetGradleFile > /dev/null && substituteInPlace $targetGradleFile --replace "$source" "maven { url \"$deriv\" }" || echo -n ""
+        grep "$source" $targetGradleFile > /dev/null && \
+          substituteInPlace $targetGradleFile --replace "$source" "$deriv"
       }
 
       function patchMavenSources() {
+        set +e
+
         local targetGradleFile="$1"
         local deriv="$2"
-        patchMavenSource $targetGradleFile 'mavenLocal()' "$deriv"
-        patchMavenSource $targetGradleFile 'mavenCentral()' "$deriv"
-        patchMavenSource $targetGradleFile 'google()' "$deriv"
-        patchMavenSource $targetGradleFile 'jcenter()' "$deriv"
-        grep 'https://maven.google.com' $targetGradleFile > /dev/null && substituteInPlace $targetGradleFile --replace 'https://maven.google.com' "$deriv" || echo -n ""
-        grep '$rootDir/../node_modules/react-native/android' $1 > /dev/null && substituteInPlace $1 --replace '$rootDir/../node_modules/react-native/android' '${mavenLocalRepos.react-native-android}' || echo -n ""
+        patchMavenSource $targetGradleFile 'mavenCentral()' 'mavenLocal()'
+        patchMavenSource $targetGradleFile 'google()' 'mavenLocal()'
+        patchMavenSource $targetGradleFile 'jcenter()' 'mavenLocal()'
+        grep 'https://maven.google.com' $targetGradleFile > /dev/null && \
+          substituteInPlace $targetGradleFile --replace 'https://maven.google.com' "$deriv"
+        grep '$rootDir/../node_modules/react-native/android' $1 > /dev/null && \
+          substituteInPlace $1 --replace '$rootDir/../node_modules/react-native/android' '${mavenLocalRepo}'
       }
 
       # Patch maven and google central repositories with our own local directories. This prevents the builder from downloading Maven artifacts
-      patchMavenSources 'node_modules/react-native/build.gradle' '${mavenLocalRepos."StatusIm"}'
-      ${lib.concatStrings (lib.mapAttrsToList (projectName: deriv:
-        let targetGradleFile = if projectName == nodeProjectName then "android/build.gradle" else "node_modules/${projectName}/android/build.gradle";
-        in ''
-          patchMavenSources '${targetGradleFile}' '${deriv}'
-        '') (lib.filterAttrs (name: value: name != "react-native-android") mavenLocalRepos))}
+      patchMavenSources 'android/build.gradle' '${mavenLocalRepo}'
+      for f in `find node_modules/ -name build.gradle`; do
+        patchMavenSources $f '${mavenLocalRepo}'
+      done
 
       # Patch prepareJSC so that it doesn't try to download from registry
       substituteInPlace node_modules/react-native/ReactAndroid/build.gradle \
@@ -114,17 +120,17 @@ let
     buildPhase = 
       androidEnvShellHook +
       status-go.shellHook-android + ''
-      export REACT_NATIVE_DEPENDENCIES="$(pwd)/deps" # Use local writable deps, otherwise (for some unknown reason) gradle will fail copying directly from the nix store
+      export REACT_NATIVE_DEPENDENCIES="$PWD/deps" # Use local writable deps, otherwise (for some unknown reason) gradle will fail copying directly from the nix store
       ( cd android
         LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${lib.makeLibraryPath [ zlib ]} \
-          gradle --offline --no-build-cache --no-daemon react-native-android:installArchives
+          gradle -Dmaven.repo.local=$PWD/.m2/repository --offline --no-build-cache --no-daemon react-native-android:installArchives
       )
     '';
     installPhase = ''
       rm -rf $out
       mkdir -p $out
       # TODO: maybe node_modules/react-native/ReactAndroid/build/{intermediates,tmp,generated} can be discarded?
-      cp -R android/ node_modules/ $out
+      cp -R .m2 android/ node_modules/ $out
 
       # Patch prepareJSC so that it doesn't subsequently try to build NDK libs
       substituteInPlace $out/node_modules/react-native/ReactAndroid/build.gradle \

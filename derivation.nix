@@ -30,6 +30,7 @@ let
 
 in {
   prod-build-android = statusMobile.prod-build;
+  inherit (statusMobile) release-android;
 
   shell = with stdenv'; mkDerivation rec {
     name = "status-react-build-env";

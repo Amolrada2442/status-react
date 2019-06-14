@@ -10,11 +10,16 @@
   stdenv ? pkgs.stdenv,
   target-os ? "all" }:
 
-(pkgs.callPackage ./derivation.nix { inherit pkgs target-os config; }).shell.overrideAttrs(_: {
-  src = null;
-  # TODO: Figure out if there's a better way to do this
-  # NOTE: There's a weird difference in behavior between Linux and macOS: in Linux the packages will only be fetched by `nix build` if unpackPhase exists. In macOS it's the other way around :-/
-  phases = with stdenv; lib.optional isLinux [ "unpackPhase" ] ++ [ "noPhase" ];
-  unpackPhase = "true";
-  noPhase = "mkdir -p $out";
-})
+let deriv = pkgs.callPackage ./derivation.nix { inherit pkgs target-os config; };
+
+in {
+  inherit deriv;
+  shell = deriv.shell.overrideAttrs(_: {
+    src = null;
+    # TODO: Figure out if there's a better way to do this
+    # NOTE: There's a weird difference in behavior between Linux and macOS: in Linux the packages will only be fetched by `nix build` if unpackPhase exists. In macOS it's the other way around :-/
+    phases = with stdenv; lib.optional isLinux [ "unpackPhase" ] ++ [ "noPhase" ];
+    unpackPhase = "true";
+    noPhase = "mkdir -p $out";
+  });
+}

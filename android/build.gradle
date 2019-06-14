@@ -41,6 +41,12 @@ subprojects {
 }
 
 allprojects {
+    beforeEvaluate {
+      if (System.env.STATUS_GO_ANDROID_LIBDIR == null || System.env.STATUS_GO_ANDROID_LIBDIR == "") {
+        throw new GradleException('STATUS_GO_ANDROID_LIBDIR environment variable is not valid!')
+      }
+    }
+
     repositories {
         mavenLocal()
         google()

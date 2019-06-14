@@ -1,32 +1,16 @@
 { config, stdenv, stdenvNoCC, callPackage,
   pkgs, mkFilter, androidenv, fetchurl, openjdk, nodejs, bash, gradle, zlib,
-  status-go, localMavenRepoBuilder, nodeProjectName, projectNodePackage, developmentNodePackages }:
+  status-go, localMavenRepoBuilder, nodeProjectName, projectNodePackage, developmentNodePackages, prod-build }:
 
 with stdenv;
 
 let
-  androidComposition = androidenv.composeAndroidPackages {
-    toolsVersion = "26.1.1";
-    platformToolsVersion = "28.0.2";
-    buildToolsVersions = [ "28.0.3" ];
-    includeEmulator = false;
-    platformVersions = [ "28" ];
-    includeSources = false;
-    includeDocs = false;
-    includeSystemImages = false;
-    systemImageTypes = [ "default" ];
-    abiVersions = [ "armeabi-v7a" ];
-    lldbVersions = [ "2.0.2558144" ];
-    cmakeVersions = [ "3.6.4111459" ];
-    includeNDK = true;
-    ndkVersion = "19.2.5345600";
-    useGoogleAPIs = false;
-    useGoogleTVAddOns = false;
-    includeExtras = [ "extras;android;m2repository" "extras;google;m2repository" ];
-  };
-  licensedAndroidEnv = callPackage ./licensed-android-sdk.nix { inherit androidComposition; };
+  inherit (callPackage ./android-env.nix { }) androidComposition licensedAndroidEnv;
 
   mavenAndNpmDeps = callPackage ./maven-and-npm-deps { inherit stdenvNoCC gradle bash zlib androidEnvShellHook localMavenRepoBuilder mkFilter nodeProjectName projectNodePackage developmentNodePackages status-go; };
+
+  target-os = "android"; prod-build' = (prod-build { inherit projectNodePackage; });
+  release-android = callPackage ./actions/release-android.nix { inherit target-os gradle androidEnvShellHook mavenAndNpmDeps mkFilter status-go zlib; prod-build = prod-build'; };
 
   androidEnvShellHook = ''
     export JAVA_HOME="${openjdk}"
@@ -40,7 +24,7 @@ let
 
 in
   {
-    inherit androidComposition;
+    inherit androidComposition release-android;
 
     buildInputs = [ mavenAndNpmDeps.deps openjdk gradle ];
     shellHook =
