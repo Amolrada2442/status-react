@@ -115,19 +115,17 @@
 
          [react/image {:source {:uri (identicon/identicon (:pubkey acc))}
                        :style styles/account-image}]
-         [react/view {:style {:margin-horizontal 16 :flex 1}}
-          [react/view {:style {:justify-content :center}}
-           [react/text {:style (assoc styles/wizard-text :text-align :left
-                                      :color colors/black
-                                      :font-weight "500")
-                        :number-of-lines 1
-                        :ellipsize-mode :middle}
-            (gfy/generate-gfy (:pubkey acc))]]
-          [react/view {:style {:justify-content :center}}
-           [react/text {:style (assoc styles/wizard-text :text-align :left)
-                        :number-of-lines 1
-                        :ellipsize-mode :middle}
-            (:pubkey acc)]]]
+         [react/view {:style {:margin-horizontal 16 :flex 1 :justify-content :space-between}}
+          [react/text {:style (assoc styles/wizard-text :text-align :left
+                                     :color colors/black
+                                     :font-weight "500")
+                       :number-of-lines 1
+                       :ellipsize-mode :middle}
+           (gfy/generate-gfy (:pubkey acc))]
+          [react/text {:style (assoc styles/wizard-text :text-align :left)
+                       :number-of-lines 1
+                       :ellipsize-mode :middle}
+           (:pubkey acc)]]
          [radio/radio selected?]]]))])
 
 (defn storage-entry [{:keys [type icon title desc]} selected-storage-type]
