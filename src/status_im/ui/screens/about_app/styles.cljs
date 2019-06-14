@@ -20,10 +20,7 @@
 
 (def learn-more-title
   {:font-size   17
-   :line-height 20
    :font-weight "600"})
 
 (def learn-more-text
-  {:color       colors/gray
-   :font-size   15
-   :line-height 22})
+  {:color colors/gray})

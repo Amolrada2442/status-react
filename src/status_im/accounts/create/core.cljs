@@ -31,7 +31,6 @@
   (assoc cofx :status (rand-nth statuses/data)))
 
 (defn create-account! [password]
-  (log/info "#create-account!" password)
   (status/create-account
    password
    #(re-frame/dispatch [:accounts.create.callback/create-account-success (types/json->clj %) password])))
@@ -39,7 +38,6 @@
 ;;;; Handlers
 (defn create-account
   [{:keys [db] :as   cofx}]
-  (log/info "creating account with password:" (get-in db [:intro-wizard :key-code]))
   (fx/merge
    cofx
    {:db (-> db
@@ -157,10 +155,10 @@
             {:db (assoc-in db [:intro-wizard :confirm-failure?] true)})
 
           (= step 4)
-          {:db (-> db
-                   (assoc-in [:intro-wizard :stored-key-code] (get-in db [:intro-wizard :key-code]))
-                   (assoc-in [:intro-wizard :key-code] nil)
-                   (assoc-in [:intro-wizard :step] 5))}
+          {:db (update db :intro-wizard
+                       assoc :stored-key-code (get-in db [:intro-wizard :key-code])
+                       :key-code nil
+                       :step 5)}
           :else (fx/merge {:db (assoc-in db [:intro-wizard :step]
                                          (inc step))}
                           (when (and (= step 5)
@@ -176,7 +174,6 @@
            keycard-instance-uid keycard-key-uid keycard-pairing keycard-paired-on] :as result}
    password
    {:keys [seed-backed-up? login? new-account?] :or {login? true}}]
-  (log/info "#on-account-created" result)
   (let [normalized-address (utils.hex/normalize-hex address)
         account            {:public-key             pubkey
                             :installation-id        (or installation-id (get-in db [:accounts/new-installation-id]))
@@ -197,7 +194,6 @@
                             :syncing-on-mobile-network? false
                             :remember-syncing-choice? false
                             :new-account?           new-account?}]
-    (log/info "account-created" account)
     (when-not (string/blank? pubkey)
       (fx/merge cofx
                 {:db (assoc db :accounts/login {:address    normalized-address
@@ -205,30 +201,27 @@
                                                 :processing true})}
                 (add-account account)
                 (when login?
-                  (log/info "#before user-login" (:intro-wizard db))
                   (accounts.login/user-login true))
                 (intro-step-forward {})))))
 
 (re-frame/reg-fx
  :intro-wizard/new-onboarding
  (fn [{:keys [n mnemonic-length]}]
-   (log/info "#:intro-wizard/new-onboarding")
    (status/new-onboarding n mnemonic-length
                           #(re-frame/dispatch [:intro-wizard/on-keys-generated (types/json->clj %)]))))
 
 (fx/defn on-keys-generated
   {:events [:intro-wizard/on-keys-generated]}
   [{:keys [db] :as cofx} result]
-  (log/info "#on-keys-generated" (count (:accounts result)))
   (fx/merge
    {:db (update db :intro-wizard
                 (fn [data]
                   (-> data
                       (dissoc :generating-keys?)
-                      (assoc :accounts (:accounts result))
-                      (assoc :selected-storage-type :default)
-                      (assoc :selected-pubkey (-> result :accounts first :pubkey))
-                      (assoc :step 2))))}
+                      (assoc :accounts (:accounts result)
+                             :selected-storage-type :default
+                             :selected-pubkey (-> result :accounts first :pubkey)
+                             :step 2))))}
    (navigation/navigate-to-cofx :intro-wizard nil)))
 
 (fx/defn on-key-selected

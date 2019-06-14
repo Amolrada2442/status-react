@@ -395,4 +395,3 @@
                                     :on-press     #(re-frame/dispatch
                                                     [:tribute-to-talk.ui/step-forward-pressed])
                                     :label        (i18n/label (step-forward-label step))}]])]]))
-

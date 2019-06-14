@@ -90,8 +90,7 @@
        (i18n/label :t/intro-privacy-policy-note1)
        [{:style (assoc styles/welcome-text-bottom-note :color colors/blue)
          :on-press privacy-policy/open-privacy-policy-link!}
-        (i18n/label :t/intro-privacy-policy-note2)]]
-      #_[privacy-policy/privacy-policy-button]]]))
+        (i18n/label :t/intro-privacy-policy-note2)]]]]))
 
 (defn generate-key []
   [components.common/image-contain
@@ -221,7 +220,6 @@
                           6 :intro-wizard-title6
                           7 :intro-wizard-title7)]
            [components.common/button {:button-style styles/bottom-button
-                                      ;:disabled?    disable-button?
                                       :on-press     #(re-frame/dispatch
                                                       [:intro-wizard/step-forward-pressed])
                                       :label        (i18n/label label-kw)}])
@@ -278,7 +276,7 @@
     [react/keyboard-avoiding-view {:style {:flex 1}}
      [toolbar/toolbar
       {:style {:border-bottom-width 0
-               :margin-top 0 #_32}}
+               :margin-top 0}}
       (when-not (#{6 7} step)
         (toolbar/nav-button
          (actions/back #(re-frame/dispatch

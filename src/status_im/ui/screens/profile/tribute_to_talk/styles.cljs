@@ -289,4 +289,3 @@
   {:height           1
    :background-color colors/gray-lighter
    :align-self       :stretch})
-
