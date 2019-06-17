@@ -101,7 +101,7 @@
 
         :user-message
         (fx/merge cofx
-                  #_(send-direct-message current-public-key nil this)
+                  (send-direct-message current-public-key nil this)
                   (send-with-pubkey params)))))
   (receive [this chat-id signature timestamp cofx]
     (let [received-message-fx {:chat-received-message/add-fx
