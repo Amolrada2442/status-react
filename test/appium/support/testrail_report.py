@@ -31,7 +31,10 @@ class TestrailReport(BaseTestReport):
         self.api_url = self.url + 'api/v2/'
 
     def get(self, method):
-        return requests.get(self.api_url + method, headers=self.headers).json()
+        rval = requests.get(self.api_url + method, headers=self.headers).json()
+        if 'error' in rval:
+            raise Exception('Failed request: %s' % rval['error'])
+        return rval
 
     def post(self, method, data):
         data = bytes(json.dumps(data), 'utf-8')
@@ -58,7 +61,11 @@ class TestrailReport(BaseTestReport):
 
     @property
     def actual_milestone_id(self):
-        return self.get_milestones()[-1]['id']
+        rval = self.get_milestones()
+        print('RVAL: ', rval)
+        print('TYPE: ', type(rval))
+        print('LENG: ', len(rval))
+        return [-1]['id']
 
     def add_run(self, run_name):
         request_body = {'suite_id': self.suite_id,
