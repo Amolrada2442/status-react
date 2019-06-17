@@ -1073,5 +1073,14 @@
     "signing-phrase" : "Signing phrase",
     "network-fee" : "Network fee",
     "sign-with-password" : "Sign with password",
-    "signing-a-message" : "Signing a message"
+    "signing-a-message" : "Signing a message",
+    "add-account" : "Add account",
+    "add-an-account" : "Add an account",
+    "back-up-your-seed-phrase" : "Back up your seed phrase",
+    "add-a-watch-account" : "Add a watch-only account",
+    "account-settings" : "Account settings",
+    "export-account" : "Export account",
+    "set-currency" : "Set currency",
+    "view-signing" : "View signing phrase",
+    "history" : "History"
 }

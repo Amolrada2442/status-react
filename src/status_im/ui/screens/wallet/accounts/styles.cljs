@@ -1,0 +1,30 @@
+(ns status-im.ui.screens.wallet.accounts.styles
+  (:require [status-im.ui.components.colors :as colors]))
+
+(def card
+  {:width            156
+   :height           145
+   :background-color colors/blue
+   :shadow-offset    {:width 0 :height 2}
+   :shadow-radius    8
+   :shadow-opacity   1
+   :shadow-color     "rgba(0, 9, 26, 0.12)"
+   :elevation        2
+   :border-radius    8
+   :justify-content  :space-between
+   :padding          12
+   :padding-bottom   6})
+
+(def add-card
+  {:width            156
+   :height           145
+   :margin-left      16
+   :background-color colors/white
+   :shadow-offset    {:width 0 :height 2}
+   :shadow-radius    8
+   :shadow-opacity   1
+   :shadow-color     "rgba(0, 9, 26, 0.12)"
+   :elevation        2
+   :border-radius    8
+   :justify-content  :center
+   :align-items      :center})

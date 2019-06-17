@@ -202,6 +202,8 @@
      :main-icons/wallet            (components.svg/slurp-svg "./resources/icons/main/wallet.svg")
      :main-icons/warning           (components.svg/slurp-svg "./resources/icons/main/warning.svg")
      :main-icons/wnode             (components.svg/slurp-svg "./resources/icons/main/mailserver.svg")
+     :main-icons/watch             (components.svg/slurp-svg "./resources/icons/main/watch.svg")
+     :main-icons/token             (components.svg/slurp-svg "./resources/icons/main/token.svg")
      ;; Tiny icons
      :tiny-icons/tiny-arrow-down   (components.svg/slurp-svg "./resources/icons/tiny/tiny_arrow_down.svg")
      :tiny-icons/tiny-check        (components.svg/slurp-svg "./resources/icons/tiny/tiny_check.svg")

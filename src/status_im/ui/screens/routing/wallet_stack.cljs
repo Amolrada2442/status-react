@@ -3,6 +3,7 @@
 (def wallet-stack
   {:name    :wallet-stack
    :screens [:wallet
+             :wallet-account
              :collectibles-list
              :wallet-onboarding-setup
              :contact-code
